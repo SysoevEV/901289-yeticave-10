@@ -45,7 +45,22 @@ $items = [   // массив данных объявлений товаров
         "url" => "img/lot-6.jpg"
     ] ,
 
-]
+];
+
+function format_price($num)
+{
+      if (!is_numeric($num)) {
+            return;
+      }
+
+      $num=ceil($num);
+
+       if ($num<1000) {
+         return $num;
+       } else {
+         return (number_format($num, 0, " ", " ") . " &#x20bd");
+       }
+}
 
 ?>
 <!DOCTYPE html>
@@ -126,7 +141,7 @@ $items = [   // массив данных объявлений товаров
                             <div class="lot__state">
                                 <div class="lot__rate">
                                     <span class="lot__amount">Стартовая цена</span>
-                                    <span class="lot__cost"><?= $items[$i]["price"] ?><b class="rub">р</b></span>
+                                    <span class="lot__cost"><?= format_price($items[$i]["price"]) ?></span>
                                 </div>
                                 <div class="lot__timer timer">
                                     12:23
