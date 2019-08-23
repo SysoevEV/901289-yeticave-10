@@ -33,11 +33,11 @@
                                     <span class="lot__cost"><?= htmlspecialchars(format_price($items[$i]["price"])) ?></span>
                                 </div>
                                 <?php
-                                       $hh=over_date($items[$i]["end_time"])[0];
-                                       $mm=over_date($items[$i]["end_time"])[1];
+                                       $hh_mm=over_date($items[$i]["end_time"]);
+
                                 ?>
-                                <div class="lot__timer timer <?php if($hh<1) print "timer--finishing" ?>">
-                                    <?= $hh . " : " . $mm;  ?>
+                                <div class="lot__timer timer <?php if($hh_mm["remain_hours"]<1) print "timer--finishing" ?>">
+                                    <?= $hh_mm["remain_hours"] . " : " . $hh_mm["remain_minutes"];  ?>
                                 </div>
                             </div>
                         </div>
