@@ -46,9 +46,9 @@ CREATE TABLE IF NOT EXISTS `categories` (
   UNIQUE KEY `symbol_code` (`symbol_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.categories: ~7 rows (приблизительно)
+-- Дамп данных таблицы yeticave.categories: ~6 rows (приблизительно)
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-REPLACE INTO `categories` (`id`, `category_name`, `symbol_code`) VALUES
+INSERT INTO `categories` (`id`, `category_name`, `symbol_code`) VALUES
 	(1, 'Доски и лыжи', 'boards'),
 	(2, 'Крепления', 'attachment'),
 	(3, 'Ботинки', 'boots'),
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `lots` (
   `user_id_author` int(10) unsigned NOT NULL,
   `user_id_winner` int(10) unsigned NOT NULL,
   `category_id` int(10) unsigned NOT NULL,
-  `date_create` date NOT NULL,
+  `date_create` datetime NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` varchar(50) NOT NULL,
   `img_ref` varchar(50) NOT NULL,
