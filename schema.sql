@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `bets` (
   `user_id` int(10) unsigned NOT NULL,
   `lot_id` int(10) unsigned NOT NULL,
   `date_create` datetime NOT NULL,
-  `price` int(10) unsigned NOT NULL,
+  `price` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `date_create` (`date_create`),
   KEY `price` (`price`),
@@ -30,27 +30,31 @@ CREATE TABLE IF NOT EXISTS `bets` (
   KEY `FK_bets_lots` (`lot_id`),
   CONSTRAINT `FK_bets_lots` FOREIGN KEY (`lot_id`) REFERENCES `lots` (`id`),
   CONSTRAINT `FK_bets_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.bets: ~0 rows (приблизительно)
+-- Дамп данных таблицы yeticave.bets: ~1 rows (приблизительно)
 /*!40000 ALTER TABLE `bets` DISABLE KEYS */;
+INSERT INTO `bets` (`id`, `user_id`, `lot_id`, `date_create`, `price`) VALUES
+	(1, 3, 5, '2019-09-01 13:41:04', 1500),
+	(2, 1, 1, '2019-09-01 13:41:04', 2500),
+	(3, 4, 2, '2019-09-01 13:41:04', 3500);
 /*!40000 ALTER TABLE `bets` ENABLE KEYS */;
 
 -- Дамп структуры для таблица yeticave.categories
 CREATE TABLE IF NOT EXISTS `categories` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `category_name` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `symbol_code` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `category_name` (`category_name`),
-  UNIQUE KEY `symbol_code` (`symbol_code`)
+  UNIQUE KEY `symbol_code` (`symbol_code`),
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.categories: ~6 rows (приблизительно)
+-- Дамп данных таблицы yeticave.categories: ~4 rows (приблизительно)
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` (`id`, `category_name`, `symbol_code`) VALUES
+INSERT INTO `categories` (`id`, `name`, `symbol_code`) VALUES
 	(1, 'Доски и лыжи', 'boards'),
-	(2, 'Крепления', 'attachment'),
+	(2, 'Крепления ', 'attachment'),
 	(3, 'Ботинки', 'boots'),
 	(4, 'Одежда', 'clothing'),
 	(5, 'Инструменты', 'tools'),
@@ -81,10 +85,17 @@ CREATE TABLE IF NOT EXISTS `lots` (
   CONSTRAINT `FK_lots_categories` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
   CONSTRAINT `FK_lots_users` FOREIGN KEY (`user_id_author`) REFERENCES `users` (`id`),
   CONSTRAINT `FK_lots_users_2` FOREIGN KEY (`user_id_winner`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы yeticave.lots: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `lots` DISABLE KEYS */;
+INSERT INTO `lots` (`id`, `user_id_author`, `user_id_winner`, `category_id`, `date_create`, `name`, `description`, `img_ref`, `start_price`, `date_finish`, `bet_step`) VALUES
+	(1, 1, 2, 1, '2019-09-01 13:41:04', '2014 Rossignol District Snowboard', 'lotdescript#1', 'img/lot-1.jpg', 10999, '2019-08-31', 10),
+	(2, 2, 3, 1, '2019-09-01 13:41:04', 'DC Ply Mens 2016/2017 Snowboard', 'lotdescript#2', 'img/lot-2.jpg', 159999, '2019-09-01', 15),
+	(3, 4, 2, 2, '2019-09-01 13:41:04', 'Крепления Union Contact Pro 2015 года размер L/XL', 'lotdescript#3', 'img/lot-3.jpg', 8000, '2019-08-30', 5),
+	(4, 2, 1, 3, '2019-09-01 13:41:04', 'Ботинки для сноуборда DC Mutiny Charocal', 'lotdescript#4', 'img/lot-4.jpg', 10999, '2019-09-05', 4),
+	(5, 1, 3, 4, '2019-09-01 13:41:04', 'Куртка для сноуборда DC Mutiny Charocal', 'lotdescript#5', 'img/lot-5.jpg', 7500, '2019-10-11', 15),
+	(6, 3, 2, 6, '2019-09-01 13:41:04', 'Маска Oakley Canopy', 'lotdescript#6', 'img/lot-6.jpg', 5400, '2019-09-09', 20);
 /*!40000 ALTER TABLE `lots` ENABLE KEYS */;
 
 -- Дамп структуры для таблица yeticave.users
@@ -92,17 +103,22 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `registration_date` datetime NOT NULL,
   `email` char(50) NOT NULL,
-  `name` char(50) NOT NULL,
+  `username` char(50) NOT NULL,
   `pasword` char(50) NOT NULL,
   `contacts` char(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `username` (`username`),
   KEY `registration_date` (`registration_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы yeticave.users: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` (`id`, `registration_date`, `email`, `username`, `pasword`, `contacts`) VALUES
+	(1, '2019-09-01 13:41:04', 'user1@mail.ru', 'user1', 'user1pass', 'Brooklyn , street'),
+	(2, '2019-09-01 13:41:04', 'user2@mail.ru', 'user2', 'user2pass', 'Saratov , home'),
+	(3, '2019-09-01 13:41:04', 'user3@mail.ru', 'user3', 'user3pass', 'Torino , home'),
+	(4, '2019-09-01 13:41:04', 'user4@mail.ru', 'user4', 'user4pass', 'Manchester , street');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
