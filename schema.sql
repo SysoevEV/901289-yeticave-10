@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `bets` (
   CONSTRAINT `FK_bets_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.bets: ~1 rows (приблизительно)
+-- Дамп данных таблицы yeticave.bets: ~3 rows (приблизительно)
 /*!40000 ALTER TABLE `bets` DISABLE KEYS */;
 INSERT INTO `bets` (`id`, `user_id`, `lot_id`, `date_create`, `price`) VALUES
 	(1, 3, 5, '2019-09-01 13:41:04', 1500),
@@ -48,9 +48,9 @@ CREATE TABLE IF NOT EXISTS `categories` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `symbol_code` (`symbol_code`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.categories: ~4 rows (приблизительно)
+-- Дамп данных таблицы yeticave.categories: ~6 rows (приблизительно)
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
 INSERT INTO `categories` (`id`, `name`, `symbol_code`) VALUES
 	(1, 'Доски и лыжи', 'boards'),
@@ -85,17 +85,17 @@ CREATE TABLE IF NOT EXISTS `lots` (
   CONSTRAINT `FK_lots_categories` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
   CONSTRAINT `FK_lots_users` FOREIGN KEY (`user_id_author`) REFERENCES `users` (`id`),
   CONSTRAINT `FK_lots_users_2` FOREIGN KEY (`user_id_winner`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.lots: ~0 rows (приблизительно)
+-- Дамп данных таблицы yeticave.lots: ~6 rows (приблизительно)
 /*!40000 ALTER TABLE `lots` DISABLE KEYS */;
 INSERT INTO `lots` (`id`, `user_id_author`, `user_id_winner`, `category_id`, `date_create`, `name`, `description`, `img_ref`, `start_price`, `date_finish`, `bet_step`) VALUES
-	(1, 1, 2, 1, '2019-09-01 13:41:04', '2014 Rossignol District Snowboard', 'lotdescript#1', 'img/lot-1.jpg', 10999, '2019-08-31', 10),
-	(2, 2, 3, 1, '2019-09-01 13:41:04', 'DC Ply Mens 2016/2017 Snowboard', 'lotdescript#2', 'img/lot-2.jpg', 159999, '2019-09-01', 15),
-	(3, 4, 2, 2, '2019-09-01 13:41:04', 'Крепления Union Contact Pro 2015 года размер L/XL', 'lotdescript#3', 'img/lot-3.jpg', 8000, '2019-08-30', 5),
-	(4, 2, 1, 3, '2019-09-01 13:41:04', 'Ботинки для сноуборда DC Mutiny Charocal', 'lotdescript#4', 'img/lot-4.jpg', 10999, '2019-09-05', 4),
-	(5, 1, 3, 4, '2019-09-01 13:41:04', 'Куртка для сноуборда DC Mutiny Charocal', 'lotdescript#5', 'img/lot-5.jpg', 7500, '2019-10-11', 15),
-	(6, 3, 2, 6, '2019-09-01 13:41:04', 'Маска Oakley Canopy', 'lotdescript#6', 'img/lot-6.jpg', 5400, '2019-09-09', 20);
+	(1, 1, 2, 1, '2019-08-31 13:41:04', '2014 Rossignol District Snowboard', 'lotdescript#1', 'img/lot-1.jpg', 10999, '2019-09-04', 10),
+	(2, 2, 3, 1, '2019-08-31 13:41:04', 'DC Ply Mens 2016/2017 Snowboard', 'lotdescript#2', 'img/lot-2.jpg', 159999, '2019-09-06', 15),
+	(3, 4, 2, 2, '2019-09-01 13:41:04', 'Крепления Union Contact Pro 2015 года размер L/XL', 'lotdescript#3', 'img/lot-3.jpg', 8000, '2019-09-03', 5),
+	(4, 2, 1, 3, '2019-08-29 13:41:04', 'Ботинки для сноуборда DC Mutiny Charocal', 'lotdescript#4', 'img/lot-4.jpg', 10999, '2019-09-05', 4),
+	(5, 1, 3, 4, '2019-08-27 13:41:04', 'Куртка для сноуборда DC Mutiny Charocal', 'lotdescript#5', 'img/lot-5.jpg', 7500, '2019-10-11', 15),
+	(6, 3, 2, 6, '2019-09-03 13:41:04', 'Маска Oakley Canopy', 'lotdescript#6', 'img/lot-6.jpg', 5400, '2019-09-09', 20);
 /*!40000 ALTER TABLE `lots` ENABLE KEYS */;
 
 -- Дамп структуры для таблица yeticave.users
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `registration_date` (`registration_date`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.users: ~0 rows (приблизительно)
+-- Дамп данных таблицы yeticave.users: ~4 rows (приблизительно)
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` (`id`, `registration_date`, `email`, `username`, `pasword`, `contacts`) VALUES
 	(1, '2019-09-01 13:41:04', 'user1@mail.ru', 'user1', 'user1pass', 'Brooklyn , street'),

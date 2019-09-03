@@ -52,13 +52,11 @@
 <footer class="main-footer">
     <nav class="nav">
         <ul class="nav__list container"> <!--заполните этот список из массива категорий-->
-            <?php for ($i = 0; $i < count($categories); $i++) : ?>
-                <?php if (isset($categories[$i])) : ?>
+            <?php foreach ($categories as $i => $val ) : ?>
                     <li class="nav__item">
-                        <a href="pages/all-lots.html"><?= htmlspecialchars($categories[$i]); ?></a>
+                        <a href="pages/all-lots.html"><?= htmlspecialchars($val['name']); ?></a>
                     </li>
-                <?php endif; ?>
-            <?php endfor; ?>
+            <?php endforeach; ?>
 
         </ul>
     </nav>
