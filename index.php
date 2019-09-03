@@ -12,10 +12,10 @@
         JOIN categories c ON c.id=l.category_id
         ORDER BY l.date_create DESC";
 
-    $categories = getSql($sql_list_categories);
+    $categories = get_categories($sql_list_categories, $con);
 
-    $items = getSql($sql_list_lots);
-    
+    $items = get_lots($sql_list_lots, $con);
+
     function format_price($num) {
         $num = ceil($num);
         return number_format($num, 0, " ", " ") . " ₽";
