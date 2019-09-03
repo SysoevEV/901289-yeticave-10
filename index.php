@@ -1,7 +1,5 @@
 ﻿<?php
-    $con=mysqli_connect("127.0.0.1", "root", "", "yeticave");
-
-    mysqli_set_charset($con, "utf8");
+    require_once("innersql.php");
 
     $is_auth = rand(0, 1);
 
@@ -9,20 +7,15 @@
 
     $sql_list_categories="SELECT name, symbol_code FROM categories";
 
-    $list_categories_array=mysqli_query($con, $sql_list_categories);
-
-    $categories=mysqli_fetch_all($list_categories_array, MYSQLI_ASSOC);
-
     $sql_list_lots="
-            SELECT l.name, c.name, l.start_price, l.img_ref, l.date_finish FROM lots l
-            JOIN categories c ON c.id=l.category_id
-            ORDER BY l.date_create DESC";
+        SELECT l.name, c.name, l.start_price, l.img_ref, l.date_finish FROM lots l
+        JOIN categories c ON c.id=l.category_id
+        ORDER BY l.date_create DESC";
 
-    $list_lots_array=mysqli_query($con, $sql_list_lots);
+    $categories = getSql($sql_list_categories);
 
-    $items=mysqli_fetch_all($list_lots_array, MYSQLI_ASSOC);
-
-
+    $items = getSql($sql_list_lots);
+    
     function format_price($num) {
         $num = ceil($num);
         return number_format($num, 0, " ", " ") . " ₽";
