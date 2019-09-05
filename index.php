@@ -6,16 +6,9 @@
 
     $user_name = 'Евгений Сысоев';
 
-    $sql_list_categories="SELECT name, symbol_code FROM categories";
+    $categories = get_categories($con);
 
-    $sql_list_lots="
-        SELECT l.id, l.name, c.name, l.start_price, l.img_ref, l.date_finish FROM lots l
-        JOIN categories c ON c.id=l.category_id
-        ORDER BY l.date_create DESC";
-
-    $categories = get_categories($sql_list_categories, $con);
-
-    $items = get_lots($sql_list_lots, $con);
+    $items = get_lots($con);
 
     $page_content = include_template("main.php", ["categories" => $categories, "items" => $items,]);
 

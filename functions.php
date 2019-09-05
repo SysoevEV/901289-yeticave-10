@@ -27,24 +27,37 @@
         return number_format($num, 0, " ", " ") . " ₽";
     }
 
-    function fetch($con, $query) {  //получает ассоциативный массив из sql запроса
+    function fetch_all($con, $query) {  //получает ассоциативный массив из sql запроса
         $list = mysqli_query($con, $query);
         $result = mysqli_fetch_all($list, MYSQLI_ASSOC);
         return $result;
     }
-
-    function get_categories($query, $con) { // получает список категорий
-        return fetch($con, $query);
-    }
-
-    function get_lots($query, $con) { // получает список лотов
-        return fetch($con, $query);
-    }
-
-    function get_lot_data($query, $con) { // получает данные лота
+    function fetch($con, $query) {  //получает ассоциативный массив из sql запроса
         $list = mysqli_query($con, $query);
         $result = mysqli_fetch_assoc($list);
         return $result;
+    }
+
+
+    function get_categories($con) { // получает список категорий
+        $query="SELECT name , symbol_code FROM categories";
+        return fetch_all($con, $query);
+     }
+
+    function get_lots($con) { // получает список лотов
+        $query="SELECT l.id, l.name, c.name, l.start_price, l.img_ref, l.date_finish FROM lots l
+        JOIN categories c ON c.id=l.category_id
+        ORDER BY l.date_create DESC";
+        return fetch_all($con, $query);
+    }
+
+    function get_lot_data($id, $con) { // получает данные лота
+                $id = mysqli_real_escape_string($con, $id);
+                $query="SELECT l.id, l.name, c.NAME, l.start_price, l.img_ref, l.date_finish, l.description FROM lots l
+                JOIN categories c ON c.id=l.category_id WHERE l.id=%s LIMIT 1";
+                $query=sprintf($query,$id);
+        return fetch($con, $query);
+
     }
 
 
