@@ -40,7 +40,7 @@
 
 
     function get_categories($con) { // получает список категорий
-        $query="SELECT name , symbol_code FROM categories";
+        $query="SELECT id, name , symbol_code FROM categories";
         return fetch_all($con, $query);
      }
 
@@ -59,6 +59,110 @@
         return fetch($con, $query);
 
     }
+
+    function get_post_val($name) { // для сохранения данных полей формы при отправке
+
+        return $_POST[$name] ?? "";
+
+    }
+
+    function validate_filled($name) { // для сохранения данных полей формы при отправке
+        if(empty($_POST[$name])){
+            return "Это поле должно быть заполнено";
+        }
+
+    }
+
+    function start_price_valid($name) {
+         if(empty($_POST[$name]) &&  $_POST[$name]!=="0" ){
+            return "Это поле должно быть заполнено";
+        }
+        if(!is_numeric($_POST[$name])) {return "Введите числовое значение";}
+        if($_POST[$name]<=0){return "Цена должна быть больше 0";}
+    }
+
+    function lot_step_valid($name) {
+        if(empty($_POST[$name]) &&  $_POST[$name]!=="0"){
+            return "Это поле должно быть заполнено";
+        }
+        if(!is_numeric($_POST[$name])) {return "Введите числовое значение";}
+        if($_POST[$name]<=0){return "Значение должно быть больше 0";}
+
+
+
+    }
+
+    function is_date_valid(string $date) : bool {
+        $format_to_check = 'Y-m-d';
+        $dateTimeObj = date_create_from_format($format_to_check, $date);
+
+        return $dateTimeObj !== false && array_sum(date_get_last_errors()) === 0;
+}
+
+    function date_valid($name){
+        if(empty($_POST[$name])){return "Выберите дату окончания торгов для лота"; };
+        if(is_date_valid($_POST[$name])){
+            $str_today=strtotime('today');
+            $str_date=strtotime($_POST[$name]);
+            $diff_time=$str_date-$str_today;
+            if($diff_time < 86400){return "Дата завершения должна быть больше текущей даты хотя бы на один день";}
+        }else{
+            return "Неверный формат даты";
+        }
+    }
+
+
+    function validate_category($name) {
+         if($_POST[$name]=="Выберите категорию"){return "Необходимо выбрать категорию";}
+
+}
+
+function db_get_prepare_stmt($link, $sql, $data = []) {
+    $stmt = mysqli_prepare($link, $sql);
+
+    if ($stmt === false) {
+        $errorMsg = 'Не удалось инициализировать подготовленное выражение: ' . mysqli_error($link);
+        die($errorMsg);
+    }
+
+    if ($data) {
+        $types = '';
+        $stmt_data = [];
+
+        foreach ($data as $value) {
+            $type = 's';
+
+            if (is_int($value)) {
+                $type = 'i';
+            }
+            else if (is_string($value)) {
+                $type = 's';
+            }
+            else if (is_double($value)) {
+                $type = 'd';
+            }
+
+            if ($type) {
+                $types .= $type;
+                $stmt_data[] = $value;
+            }
+        }
+
+        $values = array_merge([$stmt, $types], $stmt_data);
+
+        $func = 'mysqli_stmt_bind_param';
+        $func(...$values);
+
+        if (mysqli_errno($link) > 0) {
+            $errorMsg = 'Не удалось связать подготовленное выражение с параметрами: ' . mysqli_error($link);
+            die($errorMsg);
+        }
+    }
+
+    return $stmt;
+}
+
+
 
 
 ?>
