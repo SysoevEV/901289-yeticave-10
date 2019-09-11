@@ -77,22 +77,19 @@
          if(empty($_POST[$name]) &&  $_POST[$name]!=="0" ){
             return "Это поле должно быть заполнено";
         }
-        if(is_numeric($_POST[$name])) {
-            if($_POST[$name]<=0){return "Цена должна быть больше 0";}
-        }else {
-            return "Введите числовое значение";
-        }
+        if(!is_numeric($_POST[$name])) {return "Введите числовое значение";}
+        if($_POST[$name]<=0){return "Цена должна быть больше 0";}
     }
 
     function lot_step_valid($name) {
-        if(empty($_POST[$name]) &&  $_POST[$name]!=="0" ){
+        if(empty($_POST[$name]) &&  $_POST[$name]!=="0"){
             return "Это поле должно быть заполнено";
         }
-        if(is_numeric($_POST[$name])) {
-            if($_POST[$name]<=0){return "Значение шага должно быть больше 0";}
-        }else {
-            return "Введите числовое значение";
-        }
+        if(!is_numeric($_POST[$name])) {return "Введите числовое значение";}
+        if($_POST[$name]<=0){return "Значение должно быть больше 0";}
+
+
+
     }
 
     function is_date_valid(string $date) : bool {
@@ -105,14 +102,10 @@
     function date_valid($name){
         if(empty($_POST[$name])){return "Выберите дату окончания торгов для лота"; };
         if(is_date_valid($_POST[$name])){
-            $str_today=time();
+            $str_today=strtotime('today');
             $str_date=strtotime($_POST[$name]);
             $diff_time=$str_date-$str_today;
-            if($diff_time<0){return "Дата для публикации лота уже прошла, выберите другую"; }
-            $int_today=idate('d', $str_today);
-            $int_date=idate('d', $str_date);
-            $diff_time=$int_date-$int_today;
-            if($diff_time<1){return "Дата завершения должна быть больше текущей хотя бы на дин день";}
+            if($diff_time < 86400){return "Дата завершения должна быть больше текущей даты хотя бы на один день";}
         }else{
             return "Неверный формат даты";
         }
