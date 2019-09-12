@@ -162,6 +162,12 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
     return $stmt;
 }
 
+    function validate_email($email){
+       if( validate_filled($email)){ return "Это поле должно быть заполнено";}
+       if(!filter_var($_POST[$email], FILTER_VALIDATE_EMAIL)){return "Неверный формат поля";}
+
+    }
+
 
 
 
