@@ -1,4 +1,9 @@
 <?php
+    session_start();
+    if(!empty($_SESSION)){
+        http_response_code(403);
+        return;
+    }
     require_once("innersql.php");
     require_once("functions.php");
     $errors = [];
