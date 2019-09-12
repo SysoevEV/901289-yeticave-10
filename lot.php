@@ -1,4 +1,5 @@
 <?php
+    session_start();    
     require_once("innersql.php");
     require_once("functions.php");
 

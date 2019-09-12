@@ -1,7 +1,12 @@
 <?php
+    session_start();
+    if(empty($_SESSION)){
+        http_response_code(403);
+        return;
+    }
+
     require_once("innersql.php");
     require_once("functions.php");
-
     $categories=get_categories($con);
     $cat_ids=array_column($categories, 'id');
     $cat_names=array_column($categories, 'name');
@@ -68,10 +73,10 @@
             $add = include_template("add-lot.php", ["categories" => $categories, "errors"=>$errors, "_POST" => $_POST ]);
             print $add;
         }else{
-
+            $user_id_author=$_SESSION['user']['id'];
             $comb=array_combine($cat_names, $cat_ids);
             $_POST['category']=$comb[$_POST['category']];
-            $sql="INSERT INTO lots (user_id_author, user_id_winner, date_create, NAME, category_id, description, start_price, bet_step, date_finish, img_ref) VALUES(1,2, NOW(), ? , ?, ?, ?, ?, ?, ?)";
+            $sql="INSERT INTO lots (user_id_author, user_id_winner, date_create, NAME, category_id, description, start_price, bet_step, date_finish, img_ref) VALUES( $user_id_author ,2, NOW(), ? , ?, ?, ?, ?, ?, ?)";
             $stmt=db_get_prepare_stmt($con,$sql,$_POST);
             $res=mysqli_stmt_execute($stmt);
             if($res){
