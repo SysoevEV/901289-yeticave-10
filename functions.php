@@ -1,15 +1,19 @@
 <?php
 
-    function include_template($name, $data) {  //формирует шаблон
+    function include_template($name, array $data = []) {
         $name = 'templates/' . $name;
         $result = '';
-        if (!file_exists($name)) {
+
+        if (!is_readable($name)) {
             return $result;
         }
+
         ob_start();
         extract($data);
         require $name;
+
         $result = ob_get_clean();
+
         return $result;
     }
 
@@ -51,14 +55,28 @@
         return fetch_all($con, $query);
     }
 
+    function get_bets($lot_id, $con) { // получает список ставок для лота
+        $id = mysqli_real_escape_string($con, $lot_id);
+        $query="SELECT b.id, b.price, b.date_create, u.username FROM bets b JOIN users u ON u.id=b.user_id WHERE b.lot_id=".$id." ORDER BY b.date_create DESC";
+        return fetch_all($con, $query);
+    }
+
+    function get_bets_user($user_id, $con) { // получает список ставок для лота
+        $id = mysqli_real_escape_string($con, $user_id);
+        $query="SELECT lots.date_create, bets.DATE_CREATE, lots.date_finish, lots.name, lots.img_ref, bets.price, categories.NAME  FROM lots JOIN bets ON bets.lot_id=lots.id JOIN categories ON lots.category_id=categories.id  WHERE bets.user_id=".$id;
+        return fetch_all($con, $query);
+    }
+
     function get_lot_data($id, $con) { // получает данные лота
                 $id = mysqli_real_escape_string($con, $id);
-                $query="SELECT l.id, l.name, c.NAME, l.start_price, l.img_ref, l.date_finish, l.description FROM lots l
+                $query="SELECT l.id, l.name, l.bet_step, c.NAME, l.start_price, l.img_ref, l.date_finish, l.description FROM lots l
                 JOIN categories c ON c.id=l.category_id WHERE l.id=%s LIMIT 1";
                 $query=sprintf($query,$id);
         return fetch($con, $query);
 
     }
+
+
 
     function get_post_val($name) { // для сохранения данных полей формы при отправке
 
@@ -97,7 +115,18 @@
         $dateTimeObj = date_create_from_format($format_to_check, $date);
 
         return $dateTimeObj !== false && array_sum(date_get_last_errors()) === 0;
-}
+
+    }
+
+    function bet_valid($name, &$min_bet) {
+
+         if(empty($_POST[$name]) &&  $_POST[$name]!=="0" ){
+            return "Это поле должно быть заполнено";
+        }
+
+        if(!is_numeric($_POST[$name])) {return "Введите числовое значение";}
+        if($_POST[$name]<=$min_bet){return "Цена должна быть больше " . $min_bet;}
+    }
 
     function date_valid($name){
         if(empty($_POST[$name])){return "Выберите дату окончания торгов для лота"; };
@@ -117,7 +146,7 @@
 
 }
 
-function db_get_prepare_stmt($link, $sql, $data = []) {
+    function db_get_prepare_stmt($link, $sql, $data = []) {
     $stmt = mysqli_prepare($link, $sql);
 
     if ($stmt === false) {
@@ -168,7 +197,55 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
 
     }
 
+function get_noun_plural_form (int $number, string $one, string $two, string $many): string
+{
+    $number = (int) $number;
+    $mod10 = $number % 10;
+    $mod100 = $number % 100;
 
+    switch (true) {
+        case ($mod100 >= 11 && $mod100 <= 20):
+            return $many;
+
+        case ($mod10 > 5):
+            return $many;
+
+        case ($mod10 === 1):
+            return $one;
+
+        case ($mod10 >= 2 && $mod10 <= 4):
+            return $two;
+
+        default:
+            return $many;
+    }
+}
+
+function get_passed_time($time) {
+    $now=strtotime("NOW");
+    $dtcr=strtotime($time);
+    $diff_seconds=$now-$dtcr;
+    $diff_hours=round(($diff_seconds)/3600);
+    $diff_minutes=round(($diff_seconds-$diff_hours*3600)/60);
+    $hours= get_noun_plural_form(
+           $diff_hours,
+           'час',
+           'часа',
+           'часов'
+     );
+
+    $minutes= get_noun_plural_form(
+           $diff_minutes,
+           'минута',
+           'минуты',
+           'минут'
+     );
+
+    if($diff_hours<1){
+        return  $diff_minutes . " " . $minutes . " назад";
+    };
+    return $diff_hours . "  " . $hours . " " . $diff_minutes . " " . $minutes . " назад";
+}
 
 
 ?>
