@@ -76,7 +76,7 @@
             $user_id_author=$_SESSION['user']['id'];
             $comb=array_combine($cat_names, $cat_ids);
             $_POST['category']=$comb[$_POST['category']];
-            $sql="INSERT INTO lots (user_id_author, user_id_winner, date_create, NAME, category_id, description, start_price, bet_step, date_finish, img_ref) VALUES( $user_id_author ,2, NOW(), ? , ?, ?, ?, ?, ?, ?)";
+            $sql="INSERT INTO lots (user_id_author, date_create, NAME, category_id, description, start_price, bet_step, date_finish, img_ref) VALUES( $user_id_author , NOW(), ? , ?, ?, ?, ?, ?, ?)";
             $stmt=db_get_prepare_stmt($con,$sql,$_POST);
             $res=mysqli_stmt_execute($stmt);
             if($res){
@@ -90,5 +90,6 @@
         print $add;
 
     }
+    var_dump($errors);
 ?>
 

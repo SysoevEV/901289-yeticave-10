@@ -76,6 +76,14 @@
 
     }
 
+    function get_lots_with_expired_time($con) {
+
+                $query="SELECT id from lots WHERE user_id_winner IS NULL AND date_finish <= NOW()";
+
+        return fetch_all($con, $query);
+
+    }
+
 
 
     function get_post_val($name) { // для сохранения данных полей формы при отправке
@@ -245,6 +253,38 @@ function get_passed_time($time) {
         return  $diff_minutes . " " . $minutes . " назад";
     };
     return $diff_hours . "  " . $hours . " " . $diff_minutes . " " . $minutes . " назад";
+}
+
+
+    function get_winner_from_bet($id, $con) {
+               $id = mysqli_real_escape_string($con, $id);
+               $id = mysqli_real_escape_string($con, $id);
+               $query="SELECT users.ID, users.email, users.username, lots.user_id_winner, lots.NAME, lots.id FROM bets JOIN users ON bets.user_id=users.id JOIN lots ON lots.user_id_author=users.id WHERE bets.lot_id=".$id." ORDER BY bets.date_create DESC LIMIT 1";
+
+        return fetch($con, $query);
+
+    }
+
+function send_mail($winData) {
+
+       $userName = $winData['username'];
+       $email = $winData['email'];
+       $lot = $winData['id'];
+       $title = $winData['NAME'];
+
+       $transport = new Swift_SmtpTransport("phpdemo.ru", 25);
+       $transport->setUsername("keks@phpdemo.ru");
+       $transport->setPassword("htmlacademy");
+
+       $mailer = new Swift_Mailer($transport);
+       $message = new Swift_Message("Ваша ставка победила");
+       $message->setFrom(['keks@phpdemo.ru' => 'Sysoev']);
+       $message->setTo([$email => $userName]);
+       $emailBody = include_template('email.php', ['userName' => $userName, 'lot_id' => $lot, 'title' => $title  ]);
+       $message->setBody($emailBody, 'text/html');
+       $result = $mailer->send($message);
+
+       return;
 }
 
 
