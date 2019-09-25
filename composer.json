@@ -1,0 +1,12 @@
+{
+    "name": "sys/901289-yeticave-10",
+    "authors": [
+        {
+            "name": "SysoevEV",
+            "email": "plageat@ngs.ru"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.0"
+    }
+}
