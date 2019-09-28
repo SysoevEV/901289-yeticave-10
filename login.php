@@ -1,34 +1,35 @@
 <?php
-    session_start();
-    require_once("innersql.php");
-    require_once("functions.php");
+require_once("initial.php");
+require_once("functions.php");
 
+if ($con) {
+    $categories = get_categories($con);
     $errors = [];
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $form = $_POST;
 
         $req_fields = ['email', 'password'];
 
-        $rules= [
+        $rules = [
 
-            'email' =>function(){
+            'email' => function () {
                 return validate_email('email');
             },
 
-            'password' => function(){
+            'password' => function () {
                 return validate_filled('password');
             }
 
         ];
 
-        foreach($form as $key => $value){
-            if(isset($rules[$key])){
+        foreach ($form as $key => $value) {
+            if (isset($rules[$key])) {
                 $rule = $rules[$key];
-                $errors[$key]= $rule();
+                $errors[$key] = $rule();
             }
 
         }
-        $errors=array_filter($errors);
+        $errors = array_filter($errors);
 
         if (empty($errors)) {
             $email = mysqli_real_escape_string($con, $form['email']);
@@ -41,24 +42,30 @@
                     $_SESSION['user'] = $user;
                     header("Location: /index.php");
                     exit();
+                } else {
+                    $errors['password'] = 'Неверный пароль';
                 }
-                else {
-                $errors['password'] = 'Неверный пароль';
-                }
-            }
-            else {
-            $errors['email'] = 'Такой пользователь не найден';
+            } else {
+                $errors['email'] = 'Такой пользователь не найден';
             }
         }
-        $login = include_template('login.php', ["errors"=>$errors]);
 
-    }else{
-        $login = include_template('login.php', []);
-            if (isset($_SESSION['user'])) {
+    } else {
+
+        if (isset($_SESSION['user'])) {
             header("Location: /index.php");
             exit();
         }
-        }
-
+    }
+    $page_content = include_template("login.php", ["categories" => $categories, "errors" => $errors]);
+    $login = include_template("layout.php", ["content" => $page_content, "categories" => $categories, 'title' => 'Вход']);
     print($login);
+
+
+} else {
+    $page_content = include_template("login.php", ["categories" => [], "errors" => []]);
+    $login = include_template("layout.php", ["content" => "Ошибка соединения с БД", "categories" => [], 'title' => 'Вход']);
+    print($login);
+}
+
 ?>

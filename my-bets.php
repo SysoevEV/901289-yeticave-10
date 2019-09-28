@@ -1,18 +1,24 @@
 <?php
-    session_start();
-    require_once("innersql.php");
-    require_once("functions.php");
-    if(isset($_GET['id'])){
-        $bets=get_bets_user($_GET['id'],$con);
-        
+require_once("initial.php");
+require_once("functions.php");
+if ($con) {
+    $categories = get_categories($con);
+    if (isset($_GET['id'])) {
+        $bets = get_bets_user($_GET['id'], $con);
     };
 
 
-
-    $my_bets = include_template("my-bets.php", ["bets" =>$bets]);
+    $page_content = include_template("my-bets.php", ["categories" => $categories, "bets" => $bets]);
+    $my_bets = include_template("layout.php", ["content" => $page_content, "categories" => $categories, 'title' => 'Мои ставки']);
 
     print $my_bets;
 
+} else {
+    $my_bets = include_template("layout.php", ["content" => "Ошибка соединения с БД", "categories" => [], 'title' => 'Мои ставки']);
+
+
+    print $my_bets;
+}
 
 
 ?>
