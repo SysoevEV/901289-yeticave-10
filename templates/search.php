@@ -1,6 +1,8 @@
 <div class="container">
     <section class="lots">
-        <?php if (empty($lots)) : ?>
+        <?php if (!isset($_GET['search']) && !empty($lots)) : ?>
+            <h2><?= $lots[0]['NAME'] ?></h2>
+        <?php elseif (empty($lots)) : ?>
             <h2>Ничего не найдено по вашему запросу</h2>
         <?php else : ?>
             <h2>Результаты поиска по запросу: <span><?= $_GET['search']; ?></span></h2>
@@ -14,9 +16,10 @@
                         <img src="<?= $val['img_ref']; ?>" width="350" height="260" alt="Сноуборд">
                     </div>
                     <div class="lot__info">
-                        <span class="lot__category"><?= $val['NAME']; ?></span>
+                        <span class="lot__category"><?= strip_tags($val['NAME']); ?></span>
                         <h3 class="lot__title"><a class="text-link"
-                                                  href="lot.php?id=<?= $val['id']; ?>"><?= $val['name']; ?></a></h3>
+                                                  href="lot.php?id=<?= $val['id']; ?>"><?= strip_tags($val['name']); ?></a>
+                        </h3>
                         <div class="lot__state">
                             <div class="lot__rate">
                                 <span class="lot__amount">Цена</span>

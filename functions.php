@@ -1,5 +1,5 @@
 <?php
-
+//формирует шаблон
 function include_template($name, array $data = [])
 {
     $name = 'templates/' . $name;
@@ -18,8 +18,9 @@ function include_template($name, array $data = [])
     return $result;
 }
 
+//возвращает оставшееся время до over_date
 function over_date($over_date)
-{      //возвращает оставшееся время до over_date
+{
     $diff_time = strtotime($over_date) - strtotime("now");
     $remain_hours = floor($diff_time / 3600);
     $remain_minutes = floor($diff_time / 60 - $remain_hours * 60);
@@ -28,128 +29,116 @@ function over_date($over_date)
     return ["remain_hours" => $remain_hours, "remain_minutes" => $remain_minutes];
 }
 
+//добавляет ведущий 0 к числу
 function format_price($num)
-{  //добавляет ведущий 0 к числу
+{
     $num = ceil($num);
     return number_format($num, 0, " ", " ") . " ₽";
 }
 
+//получает ассоциативный массив из sql запроса
 function fetch_all($con, $query)
-{  //получает ассоциативный массив из sql запроса
+{
     $list = mysqli_query($con, $query);
     $result = mysqli_fetch_all($list, MYSQLI_ASSOC);
     return $result;
 }
 
+//получает ассоциативный массив из sql запроса
 function fetch($con, $query)
-{  //получает ассоциативный массив из sql запроса
+{
     $list = mysqli_query($con, $query);
     $result = mysqli_fetch_assoc($list);
     return $result;
 }
 
-
+// получает список категорий
 function get_categories($con)
-{ // получает список категорий
+{
     $query = "SELECT id, name , symbol_code FROM categories";
     return fetch_all($con, $query);
 }
 
+// получает список лотов
 function get_lots($con)
-{ // получает список лотов
+{
     $query = "SELECT l.id, l.NAME, c.name, l.start_price, l.img_ref, l.date_finish FROM lots l
         JOIN categories c ON c.id=l.category_id WHERE l.date_finish > NOW()
         ORDER BY l.date_create DESC";
     return fetch_all($con, $query);
 }
 
+// получает список ставок для лота
 function get_bets($lot_id, $con)
-{ // получает список ставок для лота
+{
     $id = mysqli_real_escape_string($con, $lot_id);
-    $query = "SELECT b.id, b.price, b.date_create, u.username FROM bets b JOIN users u ON u.id=b.user_id WHERE b.lot_id=" . $id . " ORDER BY b.date_create DESC";
+    $query = "SELECT b.id, b.price, b.date_create, u.username
+              FROM bets b JOIN users u ON u.id=b.user_id
+              WHERE b.lot_id=". $id . " ORDER BY b.date_create DESC";
     return fetch_all($con, $query);
 }
 
+// получает список ставок, сделанных пользователем
 function get_bets_user($user_id, $con)
-{ // получает список ставок для лота
+{
     $id = mysqli_real_escape_string($con, $user_id);
-    $query = "SELECT lots.id, lots.date_create, bets.DATE_CREATE, lots.date_finish, lots.name, lots.img_ref, bets.price, lots.user_id_winner, categories.NAME  FROM lots JOIN bets ON bets.lot_id=lots.id JOIN categories ON lots.category_id=categories.id  WHERE bets.user_id=" . $id;
+    $query = "SELECT
+              lots.id, lots.date_create, bets.DATE_CREATE, lots.date_finish, lots.name,
+              lots.img_ref, bets.price, lots.user_id_winner, categories.NAME
+              FROM lots JOIN bets ON bets.lot_id=lots.id JOIN categories ON lots.category_id=categories.id
+              WHERE bets.user_id=" . $id;
     return fetch_all($con, $query);
 }
 
+// получает данные лота
 function get_lot_data($id, $con)
-{ // получает данные лота
+{
     $id = mysqli_real_escape_string($con, $id);
-    $query = "SELECT l.id, l.name, l.bet_step, c.NAME, l.start_price, l.img_ref, l.date_finish, l.description FROM lots l
-                JOIN categories c ON c.id=l.category_id WHERE l.id=%s LIMIT 1";
+    $query = "SELECT l.id, l.name, l.bet_step, c.NAME, l.start_price, l.img_ref, l.date_finish, l.description
+              FROM lots l
+              JOIN categories c ON c.id=l.category_id WHERE l.id=%s LIMIT 1";
     $query = sprintf($query, $id);
     return fetch($con, $query);
-
 }
 
+//находит лоты с истёкшим сроком
 function get_lots_with_expired_time($con)
 {
-
     $query = "SELECT id from lots WHERE user_id_winner IS NULL AND date_finish <= NOW()";
 
     return fetch_all($con, $query);
-
 }
 
-
+// сохраняет данных полей формы при отправке
 function get_post_val($name)
-{ // для сохранения данных полей формы при отправке
+{
 
     return $_POST[$name] ?? "";
-
 }
 
-function validate_filled($name)
-{ // для сохранения данных полей формы при отправке
+// проверяет заполненность поля и его допустимую длину
+function validate_filled($name, $maxlength = 1000)
+{
     if (empty($_POST[$name])) {
         return "Это поле должно быть заполнено";
     }
 
-}
-
-function start_price_valid($name)
-{
-    if (empty($_POST[$name]) && $_POST[$name] !== "0") {
-        return "Это поле должно быть заполнено";
-    }
-    if (!is_numeric($_POST[$name])) {
-        return "Введите числовое значение";
-    }
-    if ($_POST[$name] <= 0) {
-        return "Цена должна быть больше 0";
+    if (strlen($_POST[$name]) > $maxlength) {
+        return "Превышено количество символов";
     }
 }
 
-function lot_step_valid($name)
-{
-    if (empty($_POST[$name]) && $_POST[$name] !== "0") {
-        return "Это поле должно быть заполнено";
-    }
-    if (!is_numeric($_POST[$name])) {
-        return "Введите числовое значение";
-    }
-    if ($_POST[$name] <= 0) {
-        return "Значение должно быть больше 0";
-    }
-
-
-}
-
+//валидирует формат даты
 function is_date_valid(string $date): bool
 {
     $format_to_check = 'Y-m-d';
     $dateTimeObj = date_create_from_format($format_to_check, $date);
 
     return $dateTimeObj !== false && array_sum(date_get_last_errors()) === 0;
-
 }
 
-function bet_valid($name, &$min_bet)
+//валидирует суммы для ставок
+function amount_valid($name, &$min_bet = 0)
 {
 
     if (empty($_POST[$name]) && $_POST[$name] !== "0") {
@@ -159,11 +148,17 @@ function bet_valid($name, &$min_bet)
     if (!is_numeric($_POST[$name])) {
         return "Введите числовое значение";
     }
+
+    if ($_POST[$name] == 0) {
+        return "Значение должно быть больше 0";
+    }
+
     if ($_POST[$name] < $min_bet) {
-        return "Цена должна быть больше или равна " . $min_bet;
+        return "Значение должно быть больше " . $min_bet;
     }
 }
 
+//валидирует поле с датой
 function date_valid($name)
 {
     if (empty($_POST[$name])) {
@@ -181,15 +176,15 @@ function date_valid($name)
     }
 }
 
-
+//валидирует поле категорий
 function validate_category($name)
 {
     if ($_POST[$name] == "Выберите категорию") {
         return "Необходимо выбрать категорию";
     }
-
 }
 
+//подгатавливает sql запрос для отправки
 function db_get_prepare_stmt($link, $sql, $data = [])
 {
     $stmt = mysqli_prepare($link, $sql);
@@ -208,9 +203,9 @@ function db_get_prepare_stmt($link, $sql, $data = [])
 
             if (is_int($value)) {
                 $type = 'i';
-            } else if (is_string($value)) {
+            } elseif (is_string($value)) {
                 $type = 's';
-            } else if (is_double($value)) {
+            } elseif (is_double($value)) {
                 $type = 'd';
             }
 
@@ -234,6 +229,7 @@ function db_get_prepare_stmt($link, $sql, $data = [])
     return $stmt;
 }
 
+//валидирует email
 function validate_email($email)
 {
     if (validate_filled($email)) {
@@ -242,9 +238,9 @@ function validate_email($email)
     if (!filter_var($_POST[$email], FILTER_VALIDATE_EMAIL)) {
         return "Неверный формат поля";
     }
-
 }
 
+//приводит в корректный вид запись о прошедшем времени с момента
 function get_noun_plural_form(int $number, string $one, string $two, string $many): string
 {
     $number = (int)$number;
@@ -269,6 +265,7 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
     }
 }
 
+//производит запись прошедшего времени
 function get_passed_time($time)
 {
     $now = strtotime("NOW");
@@ -296,17 +293,18 @@ function get_passed_time($time)
     return $diff_hours . "  " . $hours . " " . $diff_minutes . " " . $minutes . " назад";
 }
 
-
+//находит победителя для лота среди сделанных ставок
 function get_winner_from_bet($id, $con)
 {
     $id = mysqli_real_escape_string($con, $id);
     $id = mysqli_real_escape_string($con, $id);
-    $query = "SELECT users.ID, users.email, users.username, lots.user_id_winner, lots.NAME, lots.id FROM bets JOIN users ON bets.user_id=users.id JOIN lots ON lots.user_id_author=users.id WHERE bets.lot_id=" . $id . " ORDER BY bets.date_create DESC LIMIT 1";
-
+    $query = "SELECT users.ID, users.email, users.username, lots.user_id_winner, lots.NAME, lots.id
+              FROM bets JOIN users ON bets.user_id=users.id JOIN lots ON lots.user_id_author=users.id
+              WHERE bets.lot_id=" . $id . " ORDER BY bets.date_create DESC LIMIT 1";
     return fetch($con, $query);
-
 }
 
+//отправляет email
 function send_mail($winData)
 {
 
@@ -329,6 +327,3 @@ function send_mail($winData)
 
     return;
 }
-
-
-?>

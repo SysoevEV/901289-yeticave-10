@@ -7,7 +7,7 @@
         } ?>"> <!-- form__item--invalid -->
             <label for="lot-name">Наименование <sup>*</sup></label>
             <input id="lot-name" type="text" name="lot-name" placeholder="Введите наименование лота"
-                   value="<?= get_post_val('lot-name'); ?>">
+                   value="<?= strip_tags(get_post_val('lot-name')); ?>" maxlength=50>
             <span class="form__error"><?= $errors['lot-name']; ?></span>
         </div>
         <div class="form__item  <?php if ($errors['category']) {
@@ -19,7 +19,7 @@
                 <?php foreach ($categories as $i => $val) : ?>
                     <option <?php if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['category'] == $val['name']) {
                         print 'selected';
-                    } ?>><?= $val['name'] ?></option>
+                    } ?>><?= strip_tags($val['name']) ?></option>
                 <?php endforeach; ?>
             </select>
             <span class="form__error"><?= $errors['category']; ?></span>
@@ -30,7 +30,8 @@
     } ?>">
         <label for="message">Описание <sup>*</sup></label>
         <textarea id="message" name="message"
-                  placeholder="Напишите описание лота"><?= get_post_val('message'); ?></textarea>
+                  placeholder="Напишите описание лота"
+                  maxlength=1000><?= strip_tags(get_post_val('message')); ?></textarea>
         <span class="form__error"><?= $errors['message']; ?></span>
     </div>
     <div class="form__item form__item--file  <?php if ($errors['lot-img']) {
@@ -50,14 +51,14 @@
             print 'form__item--invalid';
         } ?>">
             <label for="lot-rate">Начальная цена <sup>*</sup></label>
-            <input id="lot-rate" type="text" name="lot-rate" value="<?= get_post_val('lot-rate'); ?>">
+            <input id="lot-rate" type="text" name="lot-rate" value="<?= strip_tags(get_post_val('lot-rate')); ?>">
             <span class="form__error"><?= $errors['lot-rate']; ?></span>
         </div>
         <div class="form__item form__item--small  <?php if ($errors['lot-step']) {
             print 'form__item--invalid';
         } ?>">
             <label for="lot-step">Шаг ставки <sup>*</sup></label>
-            <input id="lot-step" type="text" name="lot-step" value="<?= get_post_val('lot-step'); ?>">
+            <input id="lot-step" type="text" name="lot-step" value="<?= strip_tags(get_post_val('lot-step')); ?>">
             <span class="form__error"><?= $errors['lot-step']; ?></span>
         </div>
         <div class="form__item  <?php if ($errors['lot-date']) {
@@ -69,7 +70,10 @@
             <span class="form__error"><?= $errors['lot-date']; ?></span>
         </div>
     </div>
-    <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
+    <?php if ($errors): ?>
+        <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
+    <?php endif; ?>
+
     <button type="submit" class="button">Добавить лот</button>
 </form>
 

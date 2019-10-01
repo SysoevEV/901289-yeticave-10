@@ -6,7 +6,8 @@
         <?php foreach ($lots as $i => $val) : ?>
             <li class="lots__item lot">
                 <div class="lot__image">
-                    <img src="<?= $val["img_ref"] ?>" width="350" height="260" alt="">
+                    <img src="<?= $val["img_ref"] ?> " width="350" height="260" alt=""
+                         onerror="this.src = '/uploads/nopicture.png'">
                 </div>
                 <div class="lot__info">
                     <span class="lot__category"><?= $val["name"] ?></span>

@@ -1,11 +1,12 @@
 <section class="lot-item container">
-    <h2><?= $lot_data['name'] ?></h2>
+    <h2><?= strip_tags($lot_data['name']) ?></h2>
     <div class="lot-item__content">
         <div class="lot-item__left">
             <div class="lot-item__image">
-                <img src="../<?= $lot_data['img_ref'] ?>" width="730" height="548" alt="Сноуборд">
+                <img src="../<?= $lot_data['img_ref'] ?>" width="730" height="548" alt=""
+                     onerror="this.src = '/uploads/nopicture.png'">
             </div>
-            <p class="lot-item__category">Категория: <span><?= $lot_data['NAME'] ?></span></p>
+            <p class="lot-item__category">Категория: <span><?= strip_tags($lot_data['NAME']) ?></span></p>
             <p class="lot-item__description"><?= $lot_data['description'] ?></p>
         </div>
         <div class="lot-item__right">
@@ -22,7 +23,8 @@
                             <span class="lot-item__cost"><?= format_price($lot_data['start_price']) ?></span>
                         </div>
                         <div class="lot-item__min-cost">
-                            Мин. ставка <span><?= $lot_data['start_price'] + $lot_data['bet_step']; ?></span>
+                            Мин. ставка
+                            <span><?= strip_tags($lot_data['start_price'] + $lot_data['bet_step']); ?></span>
                         </div>
                     </div>
                     <form class="lot-item__form" action="lot.php?id=<?= $lot_data['id']; ?>" method="post"
@@ -32,7 +34,7 @@
                         } ?>">
                             <label for="cost">Ваша ставка</label>
                             <input id="cost" type="text" name="cost" placeholder="">
-                            <span class="form__error"><?= $errors['cost']; ?></span>
+                            <span class="form__error"><?= strip_tags($errors['cost']); ?></span>
                         </p>
                         <button type="submit" class="button">Сделать ставку</button>
                     </form>
@@ -45,8 +47,8 @@
                     <table class="history__list">
                         <?php foreach ($bets as $i => $val): ?>
                             <tr class="history__item">
-                                <td class="history__name"><?= $val["username"]; ?></td>
-                                <td class="history__price"><?= $val["price"]; ?></td>
+                                <td class="history__name"><?= strip_tags($val["username"]); ?></td>
+                                <td class="history__price"><?= strip_tags($val["price"]); ?></td>
                                 <td class="history__time"><?= get_passed_time($val["date_create"]); ?></td>
                             </tr>
                         <?php endforeach; ?>

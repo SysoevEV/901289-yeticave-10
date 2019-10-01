@@ -53,7 +53,7 @@
                 <?php foreach ($categories as $i => $val) : ?>
                     <li class="promo__item promo__item--<?= $val['symbol_code'] ?>">
                         <a class="promo__link"
-                           href="search.php?search=<?= $val['name']; ?>&cat_id=<?= $val['id']; ?>"><?= htmlspecialchars($val['name']); ?></a>
+                           href="search.php?cat_id=<?= $val['id']; ?>"><?= htmlspecialchars($val['name']); ?></a>
                     </li>
                 <?php endforeach; ?>
 
