@@ -30,19 +30,21 @@ CREATE TABLE IF NOT EXISTS `bets` (
   KEY `FK_bets_lots` (`lot_id`),
   CONSTRAINT `FK_bets_lots` FOREIGN KEY (`lot_id`) REFERENCES `lots` (`id`),
   CONSTRAINT `FK_bets_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.bets: ~8 rows (приблизительно)
+-- Дамп данных таблицы yeticave.bets: ~10 rows (приблизительно)
 /*!40000 ALTER TABLE `bets` DISABLE KEYS */;
 INSERT INTO `bets` (`id`, `user_id`, `lot_id`, `date_create`, `price`) VALUES
-	(26, 5, 19, '2019-09-28 14:32:45', 15220),
-	(27, 5, 19, '2019-09-30 13:16:34', 15320),
-	(28, 8, 18, '2019-09-30 13:22:17', 1010),
-	(29, 6, 23, '2019-09-30 17:38:37', 1526),
-	(30, 6, 22, '2019-09-30 17:41:24', 8550),
-	(31, 9, 23, '2019-10-01 11:11:22', 1551),
-	(32, 5, 1, '2019-10-01 11:27:15', 11000),
-	(33, 5, 22, '2019-10-01 11:32:23', 8888);
+	(40, 5, 18, '2019-10-02 15:36:09', 1200),
+	(41, 5, 22, '2019-10-02 15:37:13', 9049),
+	(43, 9, 23, '2019-10-02 15:38:33', 1576),
+	(44, 9, 6, '2019-10-02 15:38:55', 5712),
+	(45, 8, 20, '2019-10-02 15:41:49', 2651),
+	(46, 8, 21, '2019-10-02 23:01:20', 7602),
+	(47, 8, 5, '2019-10-02 23:10:08', 7544),
+	(50, 8, 6, '2019-10-03 15:37:41', 5999),
+	(51, 8, 23, '2019-10-04 11:42:41', 1601),
+	(52, 16, 22, '2019-10-04 14:47:11', 9149);
 /*!40000 ALTER TABLE `bets` ENABLE KEYS */;
 
 -- Дамп структуры для таблица yeticave.categories
@@ -89,24 +91,24 @@ CREATE TABLE IF NOT EXISTS `lots` (
   CONSTRAINT `FK_lots_categories` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
   CONSTRAINT `FK_lots_users` FOREIGN KEY (`user_id_author`) REFERENCES `users` (`id`),
   CONSTRAINT `FK_lots_users_2` FOREIGN KEY (`user_id_winner`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы yeticave.lots: ~13 rows (приблизительно)
 /*!40000 ALTER TABLE `lots` DISABLE KEYS */;
 INSERT INTO `lots` (`id`, `user_id_author`, `user_id_winner`, `category_id`, `date_create`, `name`, `description`, `img_ref`, `start_price`, `date_finish`, `bet_step`) VALUES
-	(1, 5, NULL, 1, '2019-08-31 13:41:04', '2014 Rossignol District Snowboard', 'Лыжи мои любимые еду асфальт лёд зима', 'img/lot-1.jpg', 10999, '2019-10-02', 10),
-	(2, 5, NULL, 1, '2019-08-31 13:41:04', 'DC Ply Mens 2016/2017 Snowboard', 'Сноуборд одна лыжа зима', 'img/lot-2.jpg', 25032, '2019-09-29', 15),
-	(3, 5, NULL, 2, '2019-09-01 13:41:04', 'Крепления Union Contact Pro 2015 года размер L/XL', 'Крепление не упадёшь круто ехать зима', 'img/lot-3.jpg', 8000, '2019-10-01', 5),
+	(1, 5, 5, 1, '2019-08-31 13:41:04', '2014 Rossignol District Snowboard', 'Лыжи мои любимые еду асфальт лёд зима', 'img/lot-1.jpg', 10999, '2019-10-04', 10),
+	(2, 5, NULL, 1, '2019-08-31 13:41:04', 'DC Ply Mens 2016/2017 Snowboard', 'Сноуборд одна лыжа зима', 'img/lot-2.jpg', 25032, '2019-10-03', 15),
+	(3, 5, NULL, 2, '2019-09-01 13:41:04', 'Крепления Union Contact Pro 2015 года размер L/XL', 'Крепление не упадёшь круто ехать зима', 'img/lot-3.jpg', 8000, '2019-10-04', 5),
 	(4, 5, NULL, 3, '2019-08-29 13:41:04', 'Ботинки для сноуборда DC Mutiny Charocal', 'Ботинки не босиком купил сам зима', 'img/lot-4.jpg', 11014, '2019-10-01', 4),
-	(5, 5, NULL, 4, '2019-08-27 13:41:04', 'Куртка для сноуборда DC Mutiny Charocal', 'Куртка тёплая зима', 'img/lot-5.jpg', 7516, '2019-10-11', 15),
-	(6, 5, NULL, 6, '2019-09-03 13:41:04', 'Маска Oakley Canopy', 'Маска крутая зима', 'img/lot-6.jpg', 5672, '2019-10-02', 20),
+	(5, 5, NULL, 4, '2019-08-27 13:41:04', 'Куртка для сноуборда DC Mutiny Charocal', 'Куртка тёплая зима', 'img/lot-5.jpg', 7544, '2019-10-11', 15),
+	(6, 5, 8, 6, '2019-09-03 13:41:04', 'Маска Oakley Canopy', 'Маска крутая зима', 'img/lot-6.jpg', 5999, '2019-10-04', 20),
 	(7, 5, NULL, 6, '2019-09-17 19:32:58', 'Птицекот', 'Отличный лот птицекот, лучший для зимы\r\nи тёплых дней. Зима.', '/uploads/97PtxTEHIts.jpg', 124, '2019-10-02', 3),
-	(18, 6, NULL, 5, '2019-09-24 15:41:11', 'Оранжевый шлем', 'Оранжевый шлем для апельсиновой прогулки', '/uploads/images.jpg', 1010, '2019-10-02', 10),
-	(19, 8, 5, 6, '2019-09-24 15:45:21', 'Набор лыжника №1', 'Всё что нужно для комфортного отдыха и прогулки на лыжах.', '/uploads/ilustracao-de-equipamento-de-esqui_23-2147984553.jpg', 15320, '2019-10-01', 100),
-	(20, 9, NULL, 5, '2019-09-24 15:48:21', 'Синих чехол', 'Прекрасный зимний синий чехол для лыж.', '/uploads/product_pict_8908936_.png', 2551, '2019-10-02', 50),
-	(21, 10, NULL, 1, '2019-09-24 15:54:06', 'Супер-лыжи', 'Отличные лыжи для настоящих ценителей. Зима и солнце, прогулки на свежем воздухе.', '/uploads/1249_large-square.jpg', 7302, '2019-10-02', 150),
-	(22, 8, NULL, 1, '2019-09-24 18:29:47', 'Комплект горнолыжника', 'Отличный комплект для катания на горных лыжах. Зима и лыжи.', '/uploads/1323_large-square.png', 8888, '2019-10-02', 50),
-	(23, 10, NULL, 4, '2019-09-24 18:50:31', 'Чёрный шлем', 'Прочный шлем для катания на лыжах и сноуборде. Зима, солнце и свежий воздух.', '/uploads/1247_large-square.jpg', 1551, '2019-10-02', 25);
+	(18, 6, 5, 5, '2019-09-24 15:41:11', 'Оранжевый шлем', 'Оранжевый шлем для апельсиновой прогулки', '/uploads/images.jpg', 1200, '2019-10-03', 10),
+	(19, 8, NULL, 6, '2019-09-24 15:45:21', 'Набор лыжника №1', 'Всё что нужно для комфортного отдыха и прогулки на лыжах.', '/uploads/ilustracao-de-equipamento-de-esqui_23-2147984553.jpg', 15320, '2019-10-03', 100),
+	(20, 9, 8, 5, '2019-09-24 15:48:21', 'Синий чехол', 'Прекрасный зимний синий чехол для лыж.', '/uploads/product_pict_8908936_.png', 2651, '2019-10-03', 50),
+	(21, 10, 8, 1, '2019-09-24 15:54:06', 'Супер-лыжи', 'Отличные лыжи для настоящих ценителей. Зима и солнце, прогулки на свежем воздухе.', '/uploads/1249_large-square.jpg', 7602, '2019-10-04', 150),
+	(22, 8, NULL, 1, '2019-09-24 18:29:47', 'Комплект горнолыжника', 'Отличный комплект для катания на горных лыжах. Зима и лыжи.', '/uploads/1323_large-square.png', 9149, '2019-10-05', 50),
+	(23, 10, NULL, 4, '2019-09-24 18:50:31', 'Чёрный шлем', 'Прочный шлем для катания на лыжах и сноуборде. Зима, солнце и свежий воздух.', '/uploads/1247_large-square.jpg', 1601, '2019-10-06', 25);
 /*!40000 ALTER TABLE `lots` ENABLE KEYS */;
 
 -- Дамп структуры для таблица yeticave.users
@@ -121,9 +123,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `username` (`username`),
   KEY `registration_date` (`registration_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы yeticave.users: ~9 rows (приблизительно)
+-- Дамп данных таблицы yeticave.users: ~10 rows (приблизительно)
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` (`id`, `registration_date`, `email`, `username`, `password`, `contacts`) VALUES
 	(5, '2019-09-12 19:16:28', 'plageat@ngs.ru', 'Евгений', '$2y$10$AmF2PZmJJ/seCag7FYusRej0dv72t3caHFEryXSe7NAc4PiPNO3xq', 'Home, forest.'),
@@ -134,7 +136,8 @@ INSERT INTO `users` (`id`, `registration_date`, `email`, `username`, `password`,
 	(10, '2019-09-24 15:51:40', 'sysoeva.ta@yandex.ru', 'Татьяна', '$2y$10$sKmCfyu3B/I7yKc8ZKR88.IEg6UF9CI3/InbHSMf0aMDmUw9J1B.2', 'home , 9'),
 	(13, '2019-09-27 13:26:24', 'done@test.ru', 'Максим', '$2y$10$N0lJCjanQ48340PPRl5UF.UZMrq/kK9V7lo.o721FK4c/GwlsguW6', 'Мой дом'),
 	(14, '2019-09-30 06:57:57', 'ded@mail.ru', 'Ded', '$2y$10$5CBSz8YGXOdjWgxsdAJHQeiIuEmhHvvAWfzfHIEYTox2Eh2jnaEeG', 'net home'),
-	(15, '2019-09-30 11:33:12', 'max@test.test', 'Maxim', '$2y$10$7JWcb0CAYp16Y31FEJIxcO2VHctuIr0v1CX9BeGYc4E3kM84aBWeO', 'Home, 7');
+	(15, '2019-09-30 11:33:12', 'max@test.test', 'Maxim', '$2y$10$7JWcb0CAYp16Y31FEJIxcO2VHctuIr0v1CX9BeGYc4E3kM84aBWeO', 'Home, 7'),
+	(16, '2019-10-04 14:46:30', 'test@test.ru', 'Vasya', '$2y$10$rQjldd2SWFfyoduciHMLZ..Ew8ijhS5Z/bE1r9unRLs2Di/gypgRC', 'Big House sea coast');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

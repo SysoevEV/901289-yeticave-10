@@ -4,7 +4,12 @@ require_once("functions.php");
 
 if (!$con) {
     $page_content = include_template("login.php", ["categories" => [], "errors" => []]);
-    $login = include_template("layout.php", ["content" => "Ошибка соединения с БД", "categories" => [], 'title' => 'Вход']);
+    $login = include_template(
+        "layout.php",
+        ["content" => "Ошибка соединения с БД",
+        "categories" => [],
+        'title' => 'Вход']
+    );
     print($login);
     die();
 }
@@ -13,9 +18,6 @@ $categories = get_categories($con);
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $form = $_POST;
-
-    $req_fields = ['email', 'password'];
-
     $rules = [
 
         'email' => function () {
@@ -33,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $rule = $rules[$key];
             $errors[$key] = $rule();
         }
-
     }
     $errors = array_filter($errors);
 
@@ -55,17 +56,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['email'] = 'Такой пользователь не найден';
         }
     }
-
 } else {
-
     if (isset($_SESSION['user'])) {
         header("Location: /index.php");
         exit();
     }
 }
 $page_content = include_template("login.php", ["categories" => $categories, "errors" => $errors]);
-$login = include_template("layout.php", ["content" => $page_content, "categories" => $categories, 'title' => 'Вход']);
+$login = include_template(
+    "layout.php",
+    ["content" => $page_content,
+    "categories" => $categories,
+    'title' => 'Вход']
+);
+
 print($login);
-
-
-?>

@@ -10,7 +10,7 @@
             <p class="lot-item__description"><?= $lot_data['description'] ?></p>
         </div>
         <div class="lot-item__right">
-            <?php if (isset($_SESSION['user'])) : ?>
+            <?php if ($show_bet_block) : ?>
                 <div class="lot-item__state">
                     <?php $hh_mm = over_date($lot_data['date_finish']); ?>
                     <div
@@ -20,7 +20,7 @@
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
-                            <span class="lot-item__cost"><?= format_price($lot_data['start_price']) ?></span>
+                            <span class="lot-item__cost"><?=format_price($lot_data['start_price']) ?></span>
                         </div>
                         <div class="lot-item__min-cost">
                             Мин. ставка
@@ -40,21 +40,21 @@
                     </form>
                 </div>
             <?php endif; ?>
-            <?php if ($bets) : ?>
                 <div class="history">
-                    <h3>История ставок (<span>1</span>)</h3>
-
+                    <?php if (!$lot_active ) : ?>
+                    <h3 style="color:lightslategray; border: 1px solid lightslategray; text-align: center">Торги окончены</h3>
+                    <?php endif; ?>
+                    <h3>История ставок:<?php if(!$bets ){print " на данный лот не было ставок";}?></h3>
                     <table class="history__list">
                         <?php foreach ($bets as $i => $val): ?>
                             <tr class="history__item">
                                 <td class="history__name"><?= strip_tags($val["username"]); ?></td>
-                                <td class="history__price"><?= strip_tags($val["price"]); ?></td>
+                                <td class="history__price"><?= strip_tags(format_price(($val["price"]))); ?></td>
                                 <td class="history__time"><?= get_passed_time($val["date_create"]); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>
                 </div>
-            <?php endif; ?>
         </div>
     </div>
 </section>

@@ -8,22 +8,36 @@ $offset = 0;
 $lots = [];
 
 if (!$con) {
-    $page_content = include_template("search.php", ["categories" => [], "lots" => [], "pages_count" => 0, "pages" => [], "offset" => 0, "search" => '', "page_items" => 0]);
-    $search = include_template("layout.php", ["content" => "Нет соединения с базой данных", "categories" => [], "title" => 'Поиск лота']);
+    $page_content = include_template(
+        "search.php",
+        ["categories" => [],
+        "lots" => [],
+        "pages_count" => 0,
+        "pages" => [],
+        "offset" => 0,
+        "search" => '',
+        "page_items" => 0]
+    );
+    $search = include_template(
+        "layout.php",
+        ["content" => "Нет соединения с базой данных",
+        "categories" => [],
+        "title" => 'Поиск лота']
+    );
     print $search;
     die();
 }
 
 $categories = get_categories($con);
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-
     $search = $_GET['search'] ?? '';
     $search = trim($search);
     $search = strip_tags($search);
     if ($search) {
-        $sql = "SELECT lots.id, lots.name, categories.NAME, lots.date_create, lots.description, lots.date_finish, lots.img_ref,
-                        lots.start_price FROM lots  JOIN categories ON categories.id=lots.category_id
-                        WHERE MATCH (lots.name, description)  AGAINST(?) ORDER BY lots.date_create DESC ";
+        $sql = "SELECT lots.id, lots.name, categories.NAME, lots.date_create, lots.description, lots.date_finish,
+                        lots.img_ref,lots.start_price FROM lots  JOIN categories ON categories.id=lots.category_id
+                        WHERE MATCH (lots.name, description)  AGAINST(?) and  lots.date_finish > NOW()
+                        ORDER BY lots.date_create DESC ";
 
         $stmt = db_get_prepare_stmt($con, $sql, [$search]);
         mysqli_stmt_execute($stmt);
@@ -35,15 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     }
 
     if (isset($_GET['cat_id'])) {
-        $sql = "SELECT lots.id, lots.name, categories.NAME, lots.date_create, lots.description, lots.date_finish, lots.img_ref,
-                        lots.start_price FROM lots  JOIN categories ON categories.id=lots.category_id
-                        WHERE category_id=" . $_GET['cat_id'] . " ORDER BY lots.date_create DESC ";
+        $sql = "SELECT lots.id, lots.name, categories.NAME, lots.date_create, lots.description, lots.date_finish,
+                lots.img_ref, lots.start_price FROM lots  JOIN categories ON categories.id=lots.category_id
+                WHERE category_id=" . $_GET['cat_id'] . " and  lots.date_finish > NOW() ORDER BY lots.date_create DESC";
 
         $result = mysqli_query($con, $sql);
         if ($result) {
             $lots = mysqli_fetch_all($result, MYSQLI_ASSOC);
         }
-
     }
 
     $page_items = 9;
@@ -60,11 +73,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $offset = ($cur_page - 1) * $page_items;
 
 
-    $page_content = include_template("search.php", ["categories" => $categories, "cur_page" => $cur_page, "lots" => $lots, "pages_count" => $pages_count, "pages" => $pages, "offset" => $offset, "search" => $search, "page_items" => $page_items]);
-    $search = include_template("layout.php", ["content" => $page_content, "categories" => $categories, "title" => 'Поиск лота']);
+    $page_content = include_template(
+        "search.php",
+        ["categories" => $categories,
+        "cur_page" => $cur_page,
+        "lots" => $lots,
+        "pages_count" => $pages_count,
+        "pages" => $pages,
+        "offset" => $offset,
+        "search" => $search,
+        "page_items" => $page_items]
+    );
+    $search = include_template(
+        "layout.php",
+        ["content" => $page_content,
+        "categories" => $categories,
+        "title" => 'Поиск лота']
+    );
 
     print $search;
 }
-
-
-?>

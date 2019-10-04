@@ -1,5 +1,10 @@
 <?php
-//формирует шаблон
+/**
+ * Подключает шаблон, передает туда данные и возвращает итоговый HTML контент
+ * @param string $name Путь к файлу шаблона относительно папки templates
+ * @param array $data Ассоциативный массив с данными для шаблона
+ * @return string Итоговый HTML
+ */
 function include_template($name, array $data = [])
 {
     $name = 'templates/' . $name;
@@ -17,8 +22,13 @@ function include_template($name, array $data = [])
 
     return $result;
 }
-
-//возвращает оставшееся время до over_date
+/**
+ * Возвращает оставшееся время от данного момента до over_date
+ *
+ * @param string $over_date Строка с данными о времени
+ *
+ * @return array Массив вида [часы, минуты]
+ */
 function over_date($over_date)
 {
     $diff_time = strtotime($over_date) - strtotime("now");
@@ -29,22 +39,43 @@ function over_date($over_date)
     return ["remain_hours" => $remain_hours, "remain_minutes" => $remain_minutes];
 }
 
-//добавляет ведущий 0 к числу
+/**
+ * Возвращает отформатированную сумму
+ * с символом ₽ в конце.
+ *
+ * @param int $num сумма
+ *
+ * @return string вида 1 000 ₽
+ */
 function format_price($num)
 {
     $num = ceil($num);
     return number_format($num, 0, " ", " ") . " ₽";
 }
-
-//получает ассоциативный массив из sql запроса
+/**
+ * Принимает ресурс соединения и SQL-запрос
+ * Возвращает двумерный массив из запроса
+ *
+ * @param resource $con
+ * @param string $query
+ *
+ * @return array $result
+ */
 function fetch_all($con, $query)
 {
     $list = mysqli_query($con, $query);
     $result = mysqli_fetch_all($list, MYSQLI_ASSOC);
     return $result;
 }
-
-//получает ассоциативный массив из sql запроса
+/**
+ * Принимает ресурс соединения и SQL-запрос
+ * Возвращает ассоциативный массив из запроса
+ *
+ * @param resource $con
+ * @param string $query
+ *
+ * @return array $result
+ */
 function fetch($con, $query)
 {
     $list = mysqli_query($con, $query);
@@ -52,14 +83,25 @@ function fetch($con, $query)
     return $result;
 }
 
-// получает список категорий
-function get_categories($con)
+/**
+ * Принимает ресурс соединения и возвращает список категорий в виде двумерного массива
+ *
+ * @param resource $con
+ *
+ * @return array
+ */
+function get_categories($con):array
 {
     $query = "SELECT id, name , symbol_code FROM categories";
     return fetch_all($con, $query);
 }
-
-// получает список лотов
+/**
+ * Принимает ресурс соединения и возвращает список лотов в виде двумерного массива
+ *
+ * @param resource $con
+ *
+ * @return array
+ */
 function get_lots($con)
 {
     $query = "SELECT l.id, l.NAME, c.name, l.start_price, l.img_ref, l.date_finish FROM lots l
@@ -67,41 +109,96 @@ function get_lots($con)
         ORDER BY l.date_create DESC";
     return fetch_all($con, $query);
 }
-
-// получает список ставок для лота
+/**
+ * Принимает ресурс соединения и id лота.
+ * Возвращает список ставок для лота в виде двумерного массива
+ *
+ * @param resource $con
+ * @param int $lot_id
+ *
+ * @return array
+ */
 function get_bets($lot_id, $con)
 {
     $id = mysqli_real_escape_string($con, $lot_id);
-    $query = "SELECT b.id, b.price, b.date_create, u.username
+    $query = "SELECT b.id, b.price, b.date_create, b.user_id, u.username
               FROM bets b JOIN users u ON u.id=b.user_id
               WHERE b.lot_id=". $id . " ORDER BY b.date_create DESC";
     return fetch_all($con, $query);
 }
 
-// получает список ставок, сделанных пользователем
+/**
+ * Принимает ресурс соединения и id юзера.
+ * Возвращает список ставок для юзера в виде двумерного массива
+ *
+ * @param resource $con
+ * @param int $user_id
+ *
+ * @return array
+ */
 function get_bets_user($user_id, $con)
 {
     $id = mysqli_real_escape_string($con, $user_id);
     $query = "SELECT
               lots.id, lots.date_create, bets.DATE_CREATE, lots.date_finish, lots.name,
-              lots.img_ref, bets.price, lots.user_id_winner, categories.NAME
+              lots.img_ref, bets.price, lots.user_id_winner, categories.NAME, users.contacts
               FROM lots JOIN bets ON bets.lot_id=lots.id JOIN categories ON lots.category_id=categories.id
-              WHERE bets.user_id=" . $id;
+              JOIN users ON lots.user_id_author=users.id
+              WHERE bets.user_id=" . $id . " ORDER BY bets.date_create DESC " ;
     return fetch_all($con, $query);
 }
+/**
+ * Обновляет данные о цене лота и формирует новую ставку на него
+ * Принимает ресурс соединения, массив данных для ставки, новую цену и id лота.
+ * Возвращает true в случае успешной процедуры обновления цены и формирования ставки.
+ *
+ * @param resource $con
+ * @param array $bets_data_prepare
+ * @param int $lot_id
+ * @param int $price
 
-// получает данные лота
+ * @return bool
+ */
+function bets_update($bets_data_prepare, $price, $lot_id, $con)
+{
+    $sql = "INSERT INTO bets (user_id, lot_id, price, date_create) VALUES( ?, ?, ?, NOW())";
+    $stmt = db_get_prepare_stmt($con, $sql, $bets_data_prepare);
+    $res = mysqli_stmt_execute($stmt);
+    if ($res) {
+        $sql = "UPDATE lots SET start_price=" . $price . " WHERE id=" . $lot_id;
+        $res = mysqli_query($con, $sql);
+        return $res;
+    }
+}
+
+/**
+ * Принимает ресурс соединения и id лота.
+ * Возвращает список ставок для юзера в виде ассоциативного массива
+ *
+ * @param resource $con
+ * @param int $id
+ *
+ * @return array
+ */
 function get_lot_data($id, $con)
 {
     $id = mysqli_real_escape_string($con, $id);
-    $query = "SELECT l.id, l.name, l.bet_step, c.NAME, l.start_price, l.img_ref, l.date_finish, l.description
+    $query = "SELECT l.id, l.name, l.bet_step, c.NAME, l.start_price, l.img_ref, l.date_finish, l.description,
+              l.user_id_author
               FROM lots l
               JOIN categories c ON c.id=l.category_id WHERE l.id=%s LIMIT 1";
     $query = sprintf($query, $id);
     return fetch($con, $query);
 }
 
-//находит лоты с истёкшим сроком
+/**
+ * Принимает ресурс соединения.
+ * Возвращает список лотов с истёкшим сроком в виде двумерного массива
+ *
+ * @param resource $con
+ *
+ * @return array
+ */
 function get_lots_with_expired_time($con)
 {
     $query = "SELECT id from lots WHERE user_id_winner IS NULL AND date_finish <= NOW()";
@@ -109,26 +206,80 @@ function get_lots_with_expired_time($con)
     return fetch_all($con, $query);
 }
 
-// сохраняет данных полей формы при отправке
+/**
+ * Проверяет свободен ли email для регистрации нового пользователя
+ * Принимает ресурс соединения, массив $_POST и массив $errors
+ * Возвращает true если email не занят, в проитивном случае false
+ *
+ * @param resource $con
+ * @param array $form
+ * @param array $con
+ *
+ * @return bool
+ */
+function check_free_email($con, $form, &$errors)
+{
+    if (empty($errors)) {
+        $email = mysqli_real_escape_string($con, $form['email']);
+        $sql = "SELECT id FROM users WHERE email = '$email'";
+        $res = mysqli_query($con, $sql);
+        if (mysqli_num_rows($res) > 0) {
+            $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
+            echo $errors['email'];
+            return false;
+        }
+        if ($res) {
+            return true;
+        }
+    }
+    return false;
+}
+/**
+ * Принимает данные из поля формы.
+ * Возвращает значение из поля с данными.
+ *
+ * @param string $name
+ *
+ * @return string
+ */
 function get_post_val($name)
 {
-
     return $_POST[$name] ?? "";
 }
-
-// проверяет заполненность поля и его допустимую длину
-function validate_filled($name, $maxlength = 1000)
+/**
+ * Проверяет поле формы на заполненность и допустимую длину.
+ * При наличии ошибок возвращает строку с текстом ошибки.
+ *
+ * @param string $name
+ * @param int $max_length
+ *
+ * @return string
+ */
+function validate_filled($name, $max_length = 1000)
 {
     if (empty($_POST[$name])) {
         return "Это поле должно быть заполнено";
     }
 
-    if (strlen($_POST[$name]) > $maxlength) {
+    if (strlen($_POST[$name]) > $max_length) {
         return "Превышено количество символов";
     }
 }
 
-//валидирует формат даты
+/**
+ * Проверяет переданную дату на соответствие формату 'ГГГГ-ММ-ДД'
+ *
+ * Примеры использования:
+ * is_date_valid('2019-01-01'); // true
+ * is_date_valid('2016-02-29'); // true
+ * is_date_valid('2019-04-31'); // false
+ * is_date_valid('10.10.2010'); // false
+ * is_date_valid('10/10/2010'); // false
+ *
+ * @param string $date Дата в виде строки
+ *
+ * @return bool true при совпадении с форматом 'ГГГГ-ММ-ДД', иначе false
+ */
 function is_date_valid(string $date): bool
 {
     $format_to_check = 'Y-m-d';
@@ -137,7 +288,16 @@ function is_date_valid(string $date): bool
     return $dateTimeObj !== false && array_sum(date_get_last_errors()) === 0;
 }
 
-//валидирует суммы для ставок
+/**
+ * Проверяет поле для ставок и
+ * возвращает текст ошибки, либо ничего
+ *
+ *
+ * @param string $name Имя поля
+ * @param int $min_bet минимально допустимая ставка
+ *
+ * @return string при обнаружении ошибки
+ */
 function amount_valid($name, &$min_bet = 0)
 {
 
@@ -158,25 +318,38 @@ function amount_valid($name, &$min_bet = 0)
     }
 }
 
-//валидирует поле с датой
+/**
+ * Проверяет поле с датой, производит валидацию и возвращает текст
+ * ошибки либо ничего.
+ *
+ * @param string $name Имя поля
+ *
+ * @return string при обнаружении ошибки
+ */
 function date_valid($name)
 {
     if (empty($_POST[$name])) {
         return "Выберите дату окончания торгов для лота";
     };
-    if (is_date_valid($_POST[$name])) {
-        $str_today = strtotime('today');
-        $str_date = strtotime($_POST[$name]);
-        $diff_time = $str_date - $str_today;
-        if ($diff_time < 86400) {
-            return "Дата завершения должна быть больше текущей даты хотя бы на один день";
-        }
-    } else {
+    if (!is_date_valid($_POST[$name])) {
         return "Неверный формат даты";
+    }
+    $str_today = strtotime('today');
+    $str_date = strtotime($_POST[$name]);
+    $diff_time = $str_date - $str_today;
+    if ($diff_time < 86400) {
+        return "Дата завершения должна быть больше текущей даты хотя бы на один день";
     }
 }
 
-//валидирует поле категорий
+/**
+ * Проверяет выбрана ли категория
+ * и возвращает текст ошибки либо ничего.
+ *
+ * @param string $name Имя поля
+ *
+ * @return string при обнаружении ошибки
+ */
 function validate_category($name)
 {
     if ($_POST[$name] == "Выберите категорию") {
@@ -184,7 +357,15 @@ function validate_category($name)
     }
 }
 
-//подгатавливает sql запрос для отправки
+/**
+ * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
+ *
+ * @param $link mysqli Ресурс соединения
+ * @param $sql string SQL запрос с плейсхолдерами вместо значений
+ * @param array $data Данные для вставки на место плейсхолдеров
+ *
+ * @return mysqli_stmt Подготовленное выражение
+ */
 function db_get_prepare_stmt($link, $sql, $data = [])
 {
     $stmt = mysqli_prepare($link, $sql);
@@ -229,7 +410,14 @@ function db_get_prepare_stmt($link, $sql, $data = [])
     return $stmt;
 }
 
-//валидирует email
+/**
+ * Проверяет поле с email, производит валидацию и возвращает текст
+ * ошибки либо ничего.
+ *
+ * @param string $name Имя поля
+ *
+ * @return string при обнаружении ошибки
+ */
 function validate_email($email)
 {
     if (validate_filled($email)) {
@@ -240,7 +428,28 @@ function validate_email($email)
     }
 }
 
-//приводит в корректный вид запись о прошедшем времени с момента
+/**
+ * Возвращает корректную форму множественного числа
+ * Ограничения: только для целых чисел
+ *
+ * Пример использования:
+ * $remaining_minutes = 5;
+ * echo "Я поставил таймер на {$remaining_minutes} " .
+ *     get_noun_plural_form(
+ *         $remaining_minutes,
+ *         'минута',
+ *         'минуты',
+ *         'минут'
+ *     );
+ * Результат: "Я поставил таймер на 5 минут"
+ *
+ * @param int $number Число, по которому вычисляем форму множественного числа
+ * @param string $one Форма единственного числа: яблоко, час, минута
+ * @param string $two Форма множественного числа для 2, 3, 4: яблока, часа, минуты
+ * @param string $many Форма множественного числа для остальных чисел
+ *
+ * @return string Рассчитанная форма множественнго числа
+ */
 function get_noun_plural_form(int $number, string $one, string $two, string $many): string
 {
     $number = (int)$number;
@@ -265,14 +474,21 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
     }
 }
 
-//производит запись прошедшего времени
+/**
+ * Рассчитывает время, прошедшее с момента размещения ставки
+ * и возвращает строку вида: Х часов Х минут назад правильно склоняя её
+ *
+ * @param string $time Время формата ГГГГ-ММ-ДД ЧЧ:ММ:СС
+ *
+ * @return string
+ */
 function get_passed_time($time)
 {
     $now = strtotime("NOW");
     $dtcr = strtotime($time);
     $diff_seconds = $now - $dtcr;
-    $diff_hours = round(($diff_seconds) / 3600);
-    $diff_minutes = round(($diff_seconds - $diff_hours * 3600) / 60);
+    $diff_hours = floor(($diff_seconds) / 3600);
+    $diff_minutes =floor(($diff_seconds%3600)/60);
     $hours = get_noun_plural_form(
         $diff_hours,
         'час',
@@ -293,7 +509,15 @@ function get_passed_time($time)
     return $diff_hours . "  " . $hours . " " . $diff_minutes . " " . $minutes . " назад";
 }
 
-//находит победителя для лота среди сделанных ставок
+/**
+ * Определяет победителя для лота
+ * и возвращает массив с данными о победителе.
+ *
+ * @param  resource $con
+ * @param  int $id
+ *
+ * @return array
+ */
 function get_winner_from_bet($id, $con)
 {
     $id = mysqli_real_escape_string($con, $id);
@@ -304,7 +528,13 @@ function get_winner_from_bet($id, $con)
     return fetch($con, $query);
 }
 
-//отправляет email
+/**
+ * Отправляет email победителю
+ *
+ * @param  array $winData
+ *
+ * @return
+ */
 function send_mail($winData)
 {
 

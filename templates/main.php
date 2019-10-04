@@ -10,9 +10,9 @@
                          onerror="this.src = '/uploads/nopicture.png'">
                 </div>
                 <div class="lot__info">
-                    <span class="lot__category"><?= $val["name"] ?></span>
+                    <span class="lot__category"><?= htmlspecialchars($val["name"]) ?></span>
                     <h3 class="lot__title"><a class="text-link"
-                                              href="lot.php?id=<?= $val["id"] ?>"><?= $val["NAME"] ?></a></h3>
+                                              href="lot.php?id=<?= $val["id"] ?>"><?= htmlspecialchars($val["NAME"]) ?></a></h3>
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Цена</span>

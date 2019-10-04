@@ -1,8 +1,14 @@
 <?php
 require_once("initial.php");
 require_once("functions.php");
+
 if (!$con) {
-    $my_bets = include_template("layout.php", ["content" => "Ошибка соединения с БД", "categories" => [], 'title' => 'Мои ставки']);
+    $my_bets = include_template(
+        "layout.php",
+        ["content" => "Ошибка соединения с БД",
+        "categories" => [],
+        'title' => 'Мои ставки']
+    );
     print $my_bets;
     die();
 }
@@ -14,9 +20,11 @@ if (isset($_GET['id'])) {
 };
 
 $page_content = include_template("my-bets.php", ["categories" => $categories, "bets" => $bets]);
-$my_bets = include_template("layout.php", ["content" => $page_content, "categories" => $categories, 'title' => 'Мои ставки']);
+$my_bets = include_template(
+    "layout.php",
+    ["content" => $page_content,
+    "categories" => $categories,
+    'title' => 'Мои ставки']
+);
 
 print $my_bets;
-
-
-?>

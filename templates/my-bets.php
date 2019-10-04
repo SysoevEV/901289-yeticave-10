@@ -3,14 +3,20 @@
     <table class="rates__list">
         <?php if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] == $_GET['id']) : ?>
             <?php foreach ($bets as $i => $val) : ?>
-                <tr class="rates__item ">
+                <tr class="rates__item <?php if ($val['user_id_winner'] == $_GET['id']){print "rates__item--win";} ?>">
                     <td class="rates__info">
                         <div class="rates__img">
                             <img src="../<?= $val['img_ref'] ?>" width="54" height="40" alt="Сноуборд"
                                  onerror="this.src = '/uploads/nopicture.png'">
                         </div>
-                        <h3 class="rates__title"><a
+                        <div>
+                         <h3 class="rates__title"><a
                                 href="lot.php?id=<?= $val['id']; ?>"><?= strip_tags($val['name']) ?></a></h3>
+                        <?php if ($val['user_id_winner'] == $_GET['id']) : ?>
+                            <p><?=$val['contacts']  ?></p>
+                        <?php endif; ?>
+                        </div>
+
                     </td>
                     <td class="rates__category">
                         <?= strip_tags($val['NAME']) ?>
@@ -34,7 +40,7 @@
                     <?php endif; ?>
 
                     <td class="rates__price">
-                        <?= strip_tags($val['price']); ?>
+                        <?= strip_tags($val['price']); ?> &#x20bd
                     </td>
                     <td class="rates__time">
                         <?= strip_tags(get_passed_time($val["DATE_CREATE"])); ?>

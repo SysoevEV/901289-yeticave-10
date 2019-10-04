@@ -7,7 +7,12 @@ if (!empty($_SESSION)) {
 }
 
 if (!$con) {
-    $sign_up = include_template("layout.php", ["content" => "Ошибка соединения с БД", "categories" => [], 'title' => 'Регистрация аккаунта']);
+    $sign_up = include_template(
+        "layout.php",
+        ["content" => "Ошибка соединения с БД",
+         "categories" => [],
+         'title' => 'Регистрация аккаунта']
+    );
     print($sign_up);
     die();
 }
@@ -43,48 +48,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $rule = $rules[$key];
             $errors[$key] = $rule();
         }
-
     }
     $errors = array_filter($errors);
 
-    if (empty($errors)) {
-        $email = mysqli_real_escape_string($con, $form['email']);
-        $sql = "SELECT id FROM users WHERE email = '$email'";
-        $res = mysqli_query($con, $sql);
-        if (mysqli_num_rows($res) > 0) {
-
-            $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
-
-
-        } else {
-
-            $password = password_hash($form['password'], PASSWORD_DEFAULT);
-
-
-            $sql = 'INSERT INTO users (registration_date, email, username, password, contacts) VALUES (NOW(), ?, ?, ?, ?)';
-
-
-            $stmt = db_get_prepare_stmt($con, $sql, [$form['email'], $form['name'], $password, $form['message']]);
-
-            $res = mysqli_stmt_execute($stmt);
-
-
-            if ($res && empty($errors)) {
-
-                header("Location: /login.php");
-                exit();
-            }
-
+    if (check_free_email($con, $form, $errors)) {
+        $password = password_hash($form['password'], PASSWORD_DEFAULT);
+        $sql = 'INSERT INTO users (registration_date, email, username, password, contacts) VALUES (NOW(), ?, ?, ?, ?)';
+        $stmt = db_get_prepare_stmt($con, $sql, [$form['email'], $form['name'], $password, $form['message']]);
+        $res = mysqli_stmt_execute($stmt);
+        if ($res && empty($errors)) {
+            header("Location: /login.php");
+            exit();
         }
-
     }
-
-
 }
 $page_content = include_template("sign-up.php", ["categories" => $categories, "errors" => $errors]);
-$sign_up = include_template("layout.php", ["content" => $page_content, "categories" => $categories, 'title' => 'Регистрация аккаунта']);
+$sign_up = include_template(
+    "layout.php",
+    ["content" => $page_content,
+    "categories" => $categories,
+    'title' => 'Регистрация аккаунта']
+);
 
 print($sign_up);
-
-
-?>

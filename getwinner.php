@@ -5,9 +5,7 @@ require_once('vendor/autoload.php');
 $lots_expired = get_lots_with_expired_time($con);
 
 if ($lots_expired) {
-
     foreach ($lots_expired as $lot) {
-
         $winner = get_winner_from_bet($lot['id'], $con);
 
         if ($winner) {
@@ -17,10 +15,5 @@ if ($lots_expired) {
                 send_mail($winner);
             }
         }
-
-
     }
-
 }
-
-?>

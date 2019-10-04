@@ -4,6 +4,9 @@
         <p style="color:red">Для возможности добавления лота необходимо авторизоваться на сайте</p>
     <?php endif; ?>
     <h2>Вход</h2>
+    <?php if (array_search("Неверный пароль" , $errors) || array_search("Такой пользователь не найден" , $errors) ): ?>
+        <h4 style="color:red;">Вы ввели неверный email/пароль.</h4>
+    <?php endif; ?>
     <div class="form__item <?php if ($errors['email']) {
         print 'form__item--invalid';
     } ?>"> <!-- form__item--invalid -->

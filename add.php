@@ -2,9 +2,14 @@
 require_once("initial.php");
 require_once("functions.php");
 
-
 if (!$con) {
-    $add = include_template("layout.php", ["content" => "Нет соединения с базой данных", "categories" => $categories, 'title' => 'Добавление лота', "is_add" => true]);
+    $add = include_template(
+        "layout.php",
+        ["content" => "Нет соединения с базой данных",
+        "categories" => $categories,
+        'title' => 'Добавление лота',
+        "is_add" => true]
+    );
     print $add;
     die();
 }
@@ -17,7 +22,6 @@ $categories = get_categories($con);
 $cat_ids = array_column($categories, 'id');
 $cat_names = array_column($categories, 'name');
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
     $rules = [
 
         'lot-name' => function () {
@@ -43,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'lot-date' => function () {
             return date_valid('lot-date');
         }
-
     ];
 
     foreach ($_POST as $key => $value) {
@@ -62,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $file_type = mime_content_type($file_tmp);
         if ($file_type !== "image/png" && $file_type !== "image/jpeg") {
             $errors['lot-img'] = "Загрузите изображение в допустимом формате: jpg, jpeg, png";
-        } else {
+        } elseif (empty($errors)) {
             $ext_mime_type = ['image/jpeg' => 'jpg', 'image/png' => 'png'];
             $file_name = uniqid() . '.' . $ext_mime_type[$file_type];
             $file_path = __DIR__ . '/uploads/';
@@ -75,8 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     if (count($errors)) {
         $page_content = include_template("add-lot.php", ["categories" => $categories, "errors" => $errors]);
-        $add = include_template("layout.php", ["content" => $page_content, "categories" => $categories, 'title' => 'Добавление лота', "is_add" => true]);
-
+        $add = include_template(
+            "layout.php",
+            ["content" => $page_content,
+            "categories" => $categories,
+            'title' => 'Добавление лота',
+            "is_add" => true]
+        );
         print $add;
     } else {
         $user_id_author = $_SESSION['user']['id'];
@@ -84,7 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (isset($_POST['category'])) {
             $_POST['category'] = $comb[$_POST['category']];
         };
-        $sql = "INSERT INTO lots (user_id_author, date_create, NAME, category_id, description, start_price, bet_step, date_finish, img_ref) VALUES( $user_id_author , NOW(), ? , ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO
+                lots (user_id_author, date_create, NAME, category_id, description,
+                start_price, bet_step, date_finish, img_ref)
+                VALUES( $user_id_author , NOW(), ? , ?, ?, ?, ?, ?, ?)";
         $stmt = db_get_prepare_stmt($con, $sql, $_POST);
         $res = mysqli_stmt_execute($stmt);
         if ($res) {
@@ -93,13 +104,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
     }
-
 } else {
     $page_content = include_template("add-lot.php", ["categories" => $categories, "errors" => []]);
-    $add = include_template("layout.php", ["content" => $page_content, "categories" => $categories, 'title' => 'Добавление лота', "is_add" => true]);
+    $add = include_template(
+        "layout.php",
+        ["content" => $page_content,
+        "categories" => $categories,
+        'title' => 'Добавление лота',
+        "is_add" => true]
+    );
     print $add;
-
 }
-
-?>
-
